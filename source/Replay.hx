@@ -1,5 +1,6 @@
 #if sys
 import sys.io.File;
+import sys.FileSystem;
 #end
 import Controls.Control;
 import flixel.FlxG;
@@ -55,21 +56,40 @@ class Replay
 
     public function SaveReplay(notearray:Array<Float>)
     {
-        var json = {
-            "songName": PlayState.SONG.song.toLowerCase(),
-            "songDiff": PlayState.storyDifficulty,
-			"noteSpeed": (FlxG.save.data.scrollSpeed > 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed),
-			"isDownscroll": FlxG.save.data.downscroll,
-			"songNotes": notearray,
-            "timestamp": Date.now(),
-            "replayGameVer": version
-        };
-
-        var data:String = Json.stringify(json);
-
-        #if sys
-        File.saveContent("assets/replays/replay-" + PlayState.SONG.song + "-time" + Date.now().getTime() + ".kadeReplay", data);
-        #end
+    	var json = {
+    		"songName": PlayState.SONG.song.toLowerCase(),
+    		"songDiff": PlayState.storyDifficulty,
+    		"noteSpeed": (FlxG.save.data.scrollSpeed > 1 ? FlxG.save.data.scrollSpeed : PlayState.SONG.speed),
+    		"isDownscroll": FlxG.save.data.downscroll,
+    		"songNotes": notearray,
+    		"timestamp": Date.now(),
+    		"replayGameVer": version
+    	};
+    
+    	var data:String = Json.stringify(json);
+    
+    	#if sys
+    	var replayDir:String = "assets/replays";
+    
+    	try
+    	{
+    		if (!FileSystem.exists(replayDir))
+    			FileSystem.createDirectory(replayDir);
+    
+    		File.saveContent(
+    			replayDir + "/replay-" +
+    			PlayState.SONG.song +
+    			"-time" +
+    			Date.now().getTime() +
+    			".kadeReplay",
+    			data
+    		);
+    	}
+    	catch (e:Dynamic)
+    	{
+    		trace("Failed to save replay: " + e);
+    	}
+    	#end
     }
 
     public function LoadFromJSON()
