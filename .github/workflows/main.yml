@@ -91,7 +91,7 @@ jobs:
       - name: Publish Artifact
         uses: actions/upload-artifact@v4.4.0
         with:
-          name: Windows Build-${{ steps.ver.outputs.content }}-${{ github.run_id}}
+          name: Windows Build
           path: export/release/windows/bin
   Android:
     runs-on: ubuntu-latest
